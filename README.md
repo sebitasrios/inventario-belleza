@@ -1,89 +1,163 @@
-Sistema de Inventario para Tienda de Belleza 💄✨
-Proyecto desarrollado como parte del curso de Programación de Software en el Instituto Tecnológico Metropolitano. Consiste en una API REST robusta para la gestión de inventarios, implementada con Java y Spring Boot.
+# 💄 Inventario Belleza API
 
-📋 Tabla de Contenidos
-Descripción
-Objetivos
-Tecnologías Utilizadas
-Arquitectura del Proyecto
-Base de Datos
-Instalación y Ejecución
-Documentación de la API (Swagger)
-Endpoints Disponibles
-📖 Descripción
-Sistema de gestión de inventario que permite controlar de manera eficiente el registro, consulta, actualización y eliminación de productos de belleza. La aplicación facilita la organización del negocio y el control del stock disponible a través de una arquitectura limpia y servicios RESTful.
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen?style=for-the-badge&logo=springboot)
+![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-2019-blue?style=for-the-badge&logo=microsoftsqlserver)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI%203-85EA2D?style=for-the-badge&logo=swagger)
+![Maven](https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge&logo=apachemaven)
 
-🎯 Objetivos
-Registrar productos: Ingreso de nombre, categoría, precio y cantidad.
-Consultar inventario: Visualización general o búsqueda por ID.
-Actualizar datos: Modificación de precios, cantidades o categorías.
-Eliminar productos: Limpieza del inventario de artículos no disponibles.
-Control de stock: Identificación de productos disponibles o agotados.
-🛠️ Tecnologías Utilizadas
-Java 17
-Spring Boot (Framework principal)
-SQL Server (Base de datos)
-JDBC (Conexión a base de datos manual)
-Maven (Gestión de dependencias)
-Swagger / Springdoc OpenAPI (Documentación)
-Git & GitHub (Control de versiones)
-🏗️ Arquitectura del Proyecto
-El proyecto sigue una arquitectura por capas para separar responsabilidades:
+API REST para la gestión de inventario de productos de belleza.
+Desarrollada con Spring Boot 3, documentada con Swagger UI y conectada a SQL Server.
 
-com.belleza.inventario├── controllers    # Manejo de peticiones HTTP y endpoints.├── services       # Lógica de negocio.├── dao            # Acceso a datos (Implementación JDBC manual).├── entities       # Entidades del sistema (Modelos).└── util           # Clases de utilidad (Conexión DB).
-💾 Base de Datos
-Se utiliza SQL Server. A continuación, el script para crear la base de datos y la tabla necesaria:
+---
 
-sql
+## 📋 Tabla de contenido
 
+- [Descripción](#-descripción)
+- [Tecnologías](#-tecnologías)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Base de datos](#-base-de-datos)
+- [Configuración](#-configuración)
+- [Endpoints disponibles](#-endpoints-disponibles)
+- [Documentación Swagger](#-documentación-swagger)
+- [Cómo ejecutar](#-cómo-ejecutar)
+- [Autor](#-autor)
+
+---
+
+## 📌 Descripción
+
+**Inventario Belleza** es una API REST construida con Spring Boot que permite gestionar
+el inventario de productos de belleza. Soporta operaciones CRUD completas y expone
+su documentación interactiva mediante Swagger UI.
+
+---
+
+## 🛠️ Tecnologías
+
+| Tecnología | Versión | Uso |
+|---|---|---|
+| Java | 17 | Lenguaje principal |
+| Spring Boot | 3.2.0 | Framework backend |
+| Spring Web | - | Construcción de la API REST |
+| SQL Server | - | Base de datos relacional |
+| SpringDoc OpenAPI | 2.3.0 | Documentación Swagger UI |
+| Maven | - | Gestión de dependencias y build |
+
+---
+
+## 📁 Estructura del proyecto
+inventario-belleza/
+├── src/
+│   └── main/
+│       ├── java/com/belleza/inventario/
+│       │   ├── InventarioApplication.java
+│       │   ├── controllers/
+│       │   │   └── ProductoController.java
+│       │   ├── entities/
+│       │   │   └── Producto.java
+│       │   └── services/
+│       │       └── ProductoService.java
+│       └── resources/
+│           └── application.properties
+├── inventario_belleza.sql
+├── pom.xml
+└── README.md
+
+---
+
+## 🗄️ Base de datos
+
+Ejecuta este script en SQL Server Management Studio (SSMS):
+
+```sql
 CREATE DATABASE inventario_belleza;
+
 USE inventario_belleza;
 
 CREATE TABLE producto (
-id INT IDENTITY(1,1) PRIMARY KEY,
-nombre VARCHAR(100),
-categoria VARCHAR(50),
-precio FLOAT,
-cantidad INT
+    id        INT IDENTITY(1,1) PRIMARY KEY,
+    nombre    VARCHAR(100),
+    categoria VARCHAR(50),
+    precio    FLOAT,
+    cantidad  INT
 );
-🚀 Instalación y Ejecución
-Requisitos Previos
-Tener instalado Java JDK 17.
-Tener SQL Server instalado y corriendo.
-Maven (o usar el wrapper incluido en el proyecto).
-Configuración
-Clona el repositorio:
-bash
+```
 
-git clone https://github.com/tu-usuario/tu-repositorio.git
-Abre el archivo src/main/resources/application.properties.
-Asegúrate de que la conexión coincida con tu configuración local. El proyecto usa autenticación de Windows por defecto:
-properties
+> El archivo también está disponible en la raíz del proyecto como `inventario_belleza.sql`
+
+---
+
+## ⚙️ Configuración
+
+`src/main/resources/application.properties`:
+
+```properties
+spring.application.name=inventario
+server.port=8080
+server.servlet.context-path=/api
 
 spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=inventario_belleza;encrypt=false;integratedSecurity=true
-Ejecución
-Puedes ejecutar el proyecto usando Maven en la terminal:
+spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
 
-bash
+springdoc.swagger-ui.path=/swagger-ui.html
+```
 
+---
+
+## 🚀 Endpoints disponibles
+
+Base URL: `http://localhost:8080/api`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/productos` | Listar todos los productos |
+| `GET` | `/productos/{id}` | Buscar producto por ID |
+| `POST` | `/productos` | Crear un nuevo producto |
+| `PUT` | `/productos/{id}` | Actualizar un producto existente |
+| `DELETE` | `/productos/{id}` | Eliminar un producto por ID |
+
+### Ejemplo Body (POST / PUT)
+
+```json
+{
+  "nombre": "Shampoo Keratina",
+  "categoria": "Cabello",
+  "precio": 35000,
+  "cantidad": 50
+}
+```
+
+---
+
+## 📄 Documentación Swagger
+
+Con la app corriendo, accede en:
+http://localhost:8080/api/swagger-ui.html
+
+---
+
+## ▶️ Cómo ejecutar
+
+**Prerrequisitos:** Java 17, Maven, SQL Server activo con `inventario_belleza` creada.
+
+```bash
+# Clonar
+git clone https://github.com/sebitasrios/inventario-belleza.git
+cd inventario-belleza
+
+# Ejecutar
 ./mvnw spring-boot:run
-O bien, abriendo el proyecto en tu IDE (IntelliJ, Eclipse, VS Code) y ejecutando la clase principal.
+```
 
-📄 Documentación de la API (Swagger)
-Una vez que la aplicación esté corriendo, puedes acceder a la documentación interactiva de Swagger en la siguiente URL:
+O desde IntelliJ: ejecuta `InventarioApplication.java` con ▶️ Run.
 
-http://localhost:8080/api/swagger-ui/index.html
+---
 
-Desde ahí podrás ver los detalles de cada endpoint y probarlos directamente.
+## 👤 Autor
 
-🔗 Endpoints Disponibles
-Método HTTP
-URL
-Descripción
-GET	/api/productos	Listar todos los productos
-GET	/api/productos/{id}	Buscar producto por ID
-POST	/api/productos	Crear un nuevo producto
-PUT	/api/productos/{id}	Actualizar un producto
-DELETE	/api/productos/{id}	Eliminar un producto
+**Sebastian Rios** — [github.com/sebitasrios](https://github.com/sebitasrios)
 
-Desarrollado por Sebastian Rios Rios - 2026.
+---
+
+> Desarrollado  usando Spring Boot ·  2026
