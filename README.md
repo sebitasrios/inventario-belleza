@@ -48,21 +48,22 @@ su documentación interactiva mediante Swagger UI.
 
 ## 📁 Estructura del proyecto
 inventario-belleza/
-├── src/
-│   └── main/
-│       ├── java/com/belleza/inventario/
-│       │   ├── InventarioApplication.java
-│       │   ├── controllers/
-│       │   │   └── ProductoController.java
-│       │   ├── entities/
-│       │   │   └── Producto.java
-│       │   └── services/
-│       │       └── ProductoService.java
-│       └── resources/
-│           └── application.properties
-├── inventario_belleza.sql
-├── pom.xml
-└── README.md
+    src/
+        main/
+            java/
+                com/belleza/inventario/
+                    InventarioApplication.java
+                    controllers/
+                        ProductoController.java
+                    entities/
+                        Producto.java
+                    services/
+                        ProductoService.java
+            resources/
+                application.properties
+    inventario_belleza.sql
+    pom.xml
+    README.md
 
 ---
 
