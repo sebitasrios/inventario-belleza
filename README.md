@@ -47,23 +47,21 @@ su documentación interactiva mediante Swagger UI.
 ---
 
 ## 📁 Estructura del proyecto
-inventario-belleza/
-    src/
-        main/
-            java/
-                com/belleza/inventario/
-                    InventarioApplication.java
-                    controllers/
-                        ProductoController.java
-                    entities/
-                        Producto.java
-                    services/
-                        ProductoService.java
-            resources/
-                application.properties
-    inventario_belleza.sql
-    pom.xml
-    README.md
+
+El proyecto respeta la arquitectura por capas:
+
+```
+src/main/java/com/belleza/inventario/
+    controllers/        Endpoints REST (GET, POST, PUT, DELETE)
+    entities/           Entidades que representan las tablas de la BD
+    services/           Lógica de negocio
+    InventarioApplication.java    Clase principal de Spring Boot
+src/main/resources/
+    application.properties        Configuración del servidor y BD
+inventario_belleza.sql            Script de creación de la base de datos
+pom.xml                           Dependencias del proyecto
+README.md                         Documentacion general del proyecto
+```
 
 ---
 
