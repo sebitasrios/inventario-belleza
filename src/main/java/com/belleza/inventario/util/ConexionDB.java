@@ -1,9 +1,11 @@
-package com.belleza.inventario.dao;
+package com.belleza.inventario.util;
 
+import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Component
 public class ConexionDB {
 
     private static final String URL = "jdbc:sqlserver://localhost:1433;" +
@@ -11,7 +13,7 @@ public class ConexionDB {
             "encrypt=false;" +
             "integratedSecurity=true;";
 
-    public static Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
     }
 }

@@ -1,17 +1,26 @@
 package com.belleza.inventario.dao;
 
 import com.belleza.inventario.entities.Producto;
+import com.belleza.inventario.util.ConexionDB;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ProductoDAOImpl implements ProductoDAO {
+
+    @Autowired
+    private ConexionDB conexionDB;
 
     @Override
     public List<Producto> obtenerTodos() {
         List<Producto> lista = new ArrayList<>();
         String sql = "SELECT * FROM producto";
-        try (Connection con = ConexionDB.getConnection();
+        try (Connection con = conexionDB.getConnection();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
@@ -33,7 +42,7 @@ public class ProductoDAOImpl implements ProductoDAO {
     public Producto obtenerPorId(int id) {
         Producto p = null;
         String sql = "SELECT * FROM producto WHERE id = ?";
-        try (Connection con = ConexionDB.getConnection();
+        try (Connection con = conexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -54,7 +63,7 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public void crear(Producto producto) {
         String sql = "INSERT INTO producto (nombre, categoria, precio, cantidad) VALUES (?, ?, ?, ?)";
-        try (Connection con = ConexionDB.getConnection();
+        try (Connection con = conexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getCategoria());
@@ -69,7 +78,7 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public void actualizar(Producto producto) {
         String sql = "UPDATE producto SET nombre=?, categoria=?, precio=?, cantidad=? WHERE id=?";
-        try (Connection con = ConexionDB.getConnection();
+        try (Connection con = conexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getCategoria());
@@ -85,7 +94,7 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public void eliminar(int id) {
         String sql = "DELETE FROM producto WHERE id=?";
-        try (Connection con = ConexionDB.getConnection();
+        try (Connection con = conexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();

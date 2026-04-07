@@ -1,8 +1,8 @@
 package com.belleza.inventario.services;
 
 import com.belleza.inventario.dao.ProductoDAO;
-import com.belleza.inventario.dao.ProductoDAOImpl;
 import com.belleza.inventario.entities.Producto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +10,8 @@ import java.util.List;
 @Service
 public class ProductoService {
 
-    private ProductoDAO productoDAO = new ProductoDAOImpl();
+    @Autowired
+    private ProductoDAO productoDAO;
 
     public List<Producto> obtenerTodos() {
         return productoDAO.obtenerTodos();
