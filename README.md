@@ -67,19 +67,56 @@ README.md                         Documentacion general del proyecto
 
 ## 🗄️ Base de datos
 
+Para la gestión del inventario se utiliza una base de datos relacional en SQL Server.
+
 Ejecuta este script en SQL Server Management Studio (SSMS):
 
 ```sql
-CREATE DATABASE inventario_belleza;
+CREATE DATABASE inventario_belleza; 
+GO 
 
-USE inventario_belleza;
+USE inventario_belleza; 
+GO 
 
-CREATE TABLE producto (
-    id        INT IDENTITY(1,1) PRIMARY KEY,
-    nombre    VARCHAR(100),
-    categoria VARCHAR(50),
-    precio    FLOAT,
-    cantidad  INT
+CREATE TABLE categoria ( 
+id_categoria INT PRIMARY KEY IDENTITY(1,1), 
+nombre VARCHAR(100) NOT NULL 
+); 
+
+CREATE TABLE proveedor ( 
+id_proveedor INT PRIMARY KEY IDENTITY(1,1), 
+nombre VARCHAR(100) NOT NULL, 
+telefono VARCHAR(20), email VARCHAR(100) 
+); 
+
+CREATE TABLE producto ( 
+id_producto INT PRIMARY KEY IDENTITY(1,1), 
+nombre VARCHAR(100) NOT NULL, 
+descripcion VARCHAR(255), 
+precio DECIMAL(10,2), 
+stock INT, 
+id_categoria INT, 
+id_proveedor INT, 
+FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria), 
+FOREIGN KEY (id_proveedor) REFERENCES proveedor(id_proveedor) 
+); 
+
+CREATE TABLE entrada ( 
+id_entrada INT PRIMARY KEY IDENTITY(1,1), 
+fecha DATE 
+); 
+
+CREATE TABLE salida ( 
+id_salida INT PRIMARY KEY IDENTITY(1,1), 
+fecha DATE 
+); 
+
+CREATE TABLE detalle_movimiento ( 
+id_detalle INT PRIMARY KEY IDENTITY(1,1), 
+id_producto INT, 
+cantidad INT, 
+tipo_movimiento VARCHAR(10), 
+FOREIGN KEY (id_producto) REFERENCES producto(id_producto) 
 );
 ```
 
