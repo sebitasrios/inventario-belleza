@@ -2,54 +2,38 @@ package com.belleza.inventario.entities;
 
 public class Producto {
 
-    private int id;
+    private int idProducto;
     private String nombre;
-    private String categoria;
+    private String descripcion;
     private double precio;
-    private int cantidad;
+    private int stock;
+    private int stockMinimo;
+    private int idCategoria;
+    private int idProveedor;
 
+    public Producto() {}
 
-    public Producto() {
-    }
+    public int getIdProducto() { return idProducto; }
+    public void setIdProducto(int idProducto) { this.idProducto = idProducto; }
 
-    // Getters y Setters
-    public int getId() {
-        return id;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
 
-    public String getCategoria() {
-        return categoria;
-    }
+    public int getStockMinimo() { return stockMinimo; }
+    public void setStockMinimo(int stockMinimo) { this.stockMinimo = stockMinimo; }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
+    public int getIdCategoria() { return idCategoria; }
+    public void setIdCategoria(int idCategoria) { this.idCategoria = idCategoria; }
 
-    public double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
-
-    public int getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-    }
+    public int getIdProveedor() { return idProveedor; }
+    public void setIdProveedor(int idProveedor) { this.idProveedor = idProveedor; }
 }
