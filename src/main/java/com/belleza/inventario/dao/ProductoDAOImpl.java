@@ -36,9 +36,9 @@ public class ProductoDAOImpl implements ProductoDAO {
         Producto p = null;
         String sql = "SELECT id_producto, nombre, descripcion, precio, stock, stock_minimo, id_categoria, id_proveedor FROM producto WHERE id_producto = ?";
         try (Connection con = conexionDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 p = mapearProducto(rs);
             }

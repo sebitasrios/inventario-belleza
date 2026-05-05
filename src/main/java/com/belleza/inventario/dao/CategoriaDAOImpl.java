@@ -36,9 +36,9 @@ public class CategoriaDAOImpl implements CategoriaDAO {
         Categoria c = null;
         String sql = "SELECT id_categoria, nombre FROM categoria WHERE id_categoria = ?";
         try (Connection con = conexionDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 c = mapearCategoria(rs);
             }
