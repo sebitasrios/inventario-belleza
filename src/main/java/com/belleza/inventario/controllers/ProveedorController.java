@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -20,35 +22,45 @@ public class ProveedorController {
     @GetMapping
     @Operation(summary = "Listar todos los proveedores")
     @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
-    public List<Proveedor> obtenerTodos() { return proveedorService.obtenerTodos(); }
+    public ResponseEntity<List<Proveedor>> obtenerTodos() {
+        return ResponseEntity.ok(proveedorService.obtenerTodos());
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar proveedor por ID")
     @ApiResponse(responseCode = "200", description = "Proveedor encontrado")
-    public Proveedor obtenerPorId(@PathVariable int id) { return proveedorService.obtenerPorId(id); }
+    @ApiResponse(responseCode = "404", description = "Proveedor no encontrado")
+    public ResponseEntity<Proveedor> obtenerPorId(@PathVariable int id) {
+        Proveedor proveedor = proveedorService.obtenerPorId(id);
+        if (proveedor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(proveedor);
+    }
 
     @PostMapping
     @Operation(summary = "Crear un proveedor")
-    @ApiResponse(responseCode = "200", description = "Proveedor creado exitosamente")
-    public String crear(@RequestBody Proveedor proveedor) {
+    @ApiResponse(responseCode = "201", description = "Proveedor creado exitosamente")
+    public ResponseEntity<String> crear(@RequestBody Proveedor proveedor) {
         proveedorService.crear(proveedor);
-        return "Proveedor creado exitosamente";
+        return ResponseEntity.status(HttpStatus.CREATED).body("Proveedor creado exitosamente");
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un proveedor")
     @ApiResponse(responseCode = "200", description = "Proveedor actualizado exitosamente")
-    public String actualizar(@PathVariable int id, @RequestBody Proveedor proveedor) {
+    @ApiResponse(responseCode = "404", description = "Proveedor no encontrado")
+    public ResponseEntity<String> actualizar(@PathVariable int id, @RequestBody Proveedor proveedor) {
         proveedor.setIdProveedor(id);
         proveedorService.actualizar(proveedor);
-        return "Proveedor actualizado exitosamente";
+        return ResponseEntity.ok("Proveedor actualizado exitosamente");
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar un proveedor")
-    @ApiResponse(responseCode = "200", description = "Proveedor eliminado exitosamente")
-    public String eliminar(@PathVariable int id) {
+    @ApiResponse(responseCode = "204", description = "Proveedor eliminado exitosamente")
+    public ResponseEntity<Void> eliminar(@PathVariable int id) {
         proveedorService.eliminar(id);
-        return "Proveedor eliminado exitosamente";
+        return ResponseEntity.noContent().build();
     }
 }

@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -20,35 +22,45 @@ public class ProductoController {
     @GetMapping
     @Operation(summary = "Listar todos los productos")
     @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
-    public List<Producto> obtenerTodos() { return productoService.obtenerTodos(); }
+    public ResponseEntity<List<Producto>> obtenerTodos() {
+        return ResponseEntity.ok(productoService.obtenerTodos());
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar producto por ID")
     @ApiResponse(responseCode = "200", description = "Producto encontrado")
-    public Producto obtenerPorId(@PathVariable int id) { return productoService.obtenerPorId(id); }
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    public ResponseEntity<Producto> obtenerPorId(@PathVariable int id) {
+        Producto producto = productoService.obtenerPorId(id);
+        if (producto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(producto);
+    }
 
     @PostMapping
     @Operation(summary = "Crear un producto")
-    @ApiResponse(responseCode = "200", description = "Producto creado exitosamente")
-    public String crear(@RequestBody Producto producto) {
+    @ApiResponse(responseCode = "201", description = "Producto creado exitosamente")
+    public ResponseEntity<String> crear(@RequestBody Producto producto) {
         productoService.crear(producto);
-        return "Producto creado exitosamente";
+        return ResponseEntity.status(HttpStatus.CREATED).body("Producto creado exitosamente");
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un producto")
     @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente")
-    public String actualizar(@PathVariable int id, @RequestBody Producto producto) {
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    public ResponseEntity<String> actualizar(@PathVariable int id, @RequestBody Producto producto) {
         producto.setIdProducto(id);
         productoService.actualizar(producto);
-        return "Producto actualizado exitosamente";
+        return ResponseEntity.ok("Producto actualizado exitosamente");
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar un producto")
-    @ApiResponse(responseCode = "200", description = "Producto eliminado exitosamente")
-    public String eliminar(@PathVariable int id) {
+    @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente")
+    public ResponseEntity<Void> eliminar(@PathVariable int id) {
         productoService.eliminar(id);
-        return "Producto eliminado exitosamente";
+        return ResponseEntity.noContent().build();
     }
 }

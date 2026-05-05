@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -20,35 +22,45 @@ public class CategoriaController {
     @GetMapping
     @Operation(summary = "Listar todas las categorías")
     @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
-    public List<Categoria> obtenerTodos() { return categoriaService.obtenerTodos(); }
+    public ResponseEntity<List<Categoria>> obtenerTodos() {
+        return ResponseEntity.ok(categoriaService.obtenerTodos());
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar categoría por ID")
     @ApiResponse(responseCode = "200", description = "Categoría encontrada")
-    public Categoria obtenerPorId(@PathVariable int id) { return categoriaService.obtenerPorId(id); }
+    @ApiResponse(responseCode = "404", description = "Categoría no encontrada")
+    public ResponseEntity<Categoria> obtenerPorId(@PathVariable int id) {
+        Categoria categoria = categoriaService.obtenerPorId(id);
+        if (categoria == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(categoria);
+    }
 
     @PostMapping
     @Operation(summary = "Crear una categoría")
-    @ApiResponse(responseCode = "200", description = "Categoría creada exitosamente")
-    public String crear(@RequestBody Categoria categoria) {
+    @ApiResponse(responseCode = "201", description = "Categoría creada exitosamente")
+    public ResponseEntity<String> crear(@RequestBody Categoria categoria) {
         categoriaService.crear(categoria);
-        return "Categoría creada exitosamente";
+        return ResponseEntity.status(HttpStatus.CREATED).body("Categoría creada exitosamente");
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar una categoría")
     @ApiResponse(responseCode = "200", description = "Categoría actualizada exitosamente")
-    public String actualizar(@PathVariable int id, @RequestBody Categoria categoria) {
+    @ApiResponse(responseCode = "404", description = "Categoría no encontrada")
+    public ResponseEntity<String> actualizar(@PathVariable int id, @RequestBody Categoria categoria) {
         categoria.setIdCategoria(id);
         categoriaService.actualizar(categoria);
-        return "Categoría actualizada exitosamente";
+        return ResponseEntity.ok("Categoría actualizada exitosamente");
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar una categoría")
-    @ApiResponse(responseCode = "200", description = "Categoría eliminada exitosamente")
-    public String eliminar(@PathVariable int id) {
+    @ApiResponse(responseCode = "204", description = "Categoría eliminada exitosamente")
+    public ResponseEntity<Void> eliminar(@PathVariable int id) {
         categoriaService.eliminar(id);
-        return "Categoría eliminada exitosamente";
+        return ResponseEntity.noContent().build();
     }
 }
