@@ -1,0 +1,29 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Producto {
+  - idProducto: int
+  - nombre: String
+  - descripcion: String
+  - precio: double
+  - stock: int
+  - stockMinimo: int
+  - idCategoria: int
+  - idProveedor: int
+}
+
+class Categoria {
+  - idCategoria: int
+  - nombre: String
+}
+
+class Proveedor {
+  - idProveedor: int
+  - nombre: String
+  - telefono: String
+  - email: String
+}
+
+Producto --> Categoria : idCategoria
+Producto --> Proveedor : idProveedor
+@enduml
