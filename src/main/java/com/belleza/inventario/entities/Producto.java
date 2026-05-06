@@ -1,18 +1,38 @@
 package com.belleza.inventario.entities;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "producto")
 public class Producto {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_producto")
     private int idProducto;
+
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
+
+    @Column(name = "descripcion", length = 255)
     private String descripcion;
+
+    @Column(name = "precio", nullable = false)
     private double precio;
+
+    @Column(name = "stock", nullable = false)
     private int stock;
+
+    @Column(name = "stock_minimo", nullable = false)
     private int stockMinimo;
+
+    @Column(name = "id_categoria")
     private int idCategoria;
+
+    @Column(name = "id_proveedor")
     private int idProveedor;
 
-    public Producto() {}
-
+    // Getters y Setters
     public int getIdProducto() { return idProducto; }
     public void setIdProducto(int idProducto) { this.idProducto = idProducto; }
 

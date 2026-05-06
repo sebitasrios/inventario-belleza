@@ -1,7 +1,7 @@
 package com.belleza.inventario.controllers;
 
 import com.belleza.inventario.entities.Producto;
-import com.belleza.inventario.services.ProductoService;
+import com.belleza.inventario.services.IProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -16,8 +17,11 @@ import java.util.List;
 @Tag(name = "Productos", description = "Operaciones para gestionar el inventario de productos de belleza")
 public class ProductoController {
 
+    // Inyectamos la INTERFAZ, no la implementación concreta — desacoplamiento
     @Autowired
-    private ProductoService productoService;
+    private IProductoService productoService;
+
+    // ── CRUD (SQL) ────────────────────────────────────────────────────────────
 
     @GetMapping
     @Operation(summary = "Listar todos los productos")
@@ -62,5 +66,36 @@ public class ProductoController {
     public ResponseEntity<Void> eliminar(@PathVariable int id) {
         productoService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ── Escenarios JPA ────────────────────────────────────────────────────────
+
+    @GetMapping("/bajo-stock")
+    @Operation(summary = "Productos con stock por debajo del mínimo (JPA)",
+            description = "Devuelve los productos cuyo stock actual es menor al stock mínimo configurado")
+    @ApiResponse(responseCode = "200", description = "Lista de productos con stock bajo")
+    public ResponseEntity<List<Producto>> obtenerBajoStock() {
+        return ResponseEntity.ok(productoService.obtenerProductosBajoStock());
+    }
+
+    @GetMapping("/por-categoria/{idCategoria}")
+    @Operation(summary = "Productos por categoría (JPA)")
+    @ApiResponse(responseCode = "200", description = "Lista de productos de la categoría")
+    public ResponseEntity<List<Producto>> obtenerPorCategoria(@PathVariable int idCategoria) {
+        return ResponseEntity.ok(productoService.obtenerPorCategoria(idCategoria));
+    }
+
+    @GetMapping("/por-proveedor/{idProveedor}")
+    @Operation(summary = "Productos por proveedor (JPA)")
+    @ApiResponse(responseCode = "200", description = "Lista de productos del proveedor")
+    public ResponseEntity<List<Producto>> obtenerPorProveedor(@PathVariable int idProveedor) {
+        return ResponseEntity.ok(productoService.obtenerPorProveedor(idProveedor));
+    }
+
+    @GetMapping("/precio-mayor/{precio}")
+    @Operation(summary = "Productos con precio mayor al indicado (JPA)")
+    @ApiResponse(responseCode = "200", description = "Lista de productos filtrados por precio")
+    public ResponseEntity<List<Producto>> obtenerPorPrecioMayorA(@PathVariable double precio) {
+        return ResponseEntity.ok(productoService.obtenerPorPrecioMayorA(precio));
     }
 }

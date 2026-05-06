@@ -1,7 +1,7 @@
 package com.belleza.inventario.controllers;
 
 import com.belleza.inventario.entities.Proveedor;
-import com.belleza.inventario.services.ProveedorService;
+import com.belleza.inventario.services.IProveedorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,15 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/proveedores")
 @Tag(name = "Proveedores", description = "Operaciones para gestionar los proveedores")
 public class ProveedorController {
 
+    // Inyectamos la INTERFAZ — desacoplamiento de capas
     @Autowired
-    private ProveedorService proveedorService;
+    private IProveedorService proveedorService;
+
+    // ── CRUD (SQL) ────────────────────────────────────────────────────────────
 
     @GetMapping
     @Operation(summary = "Listar todos los proveedores")
@@ -41,7 +46,14 @@ public class ProveedorController {
     @PostMapping
     @Operation(summary = "Crear un proveedor")
     @ApiResponse(responseCode = "201", description = "Proveedor creado exitosamente")
+    @ApiResponse(responseCode = "409", description = "Ya existe un proveedor con ese email")
     public ResponseEntity<String> crear(@RequestBody Proveedor proveedor) {
+        // Escenario JPA: verificar email duplicado antes de crear
+        Optional<Proveedor> existente = proveedorService.buscarPorEmail(proveedor.getEmail());
+        if (existente.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un proveedor registrado con el email: " + proveedor.getEmail());
+        }
         proveedorService.crear(proveedor);
         return ResponseEntity.status(HttpStatus.CREATED).body("Proveedor creado exitosamente");
     }
@@ -62,5 +74,24 @@ public class ProveedorController {
     public ResponseEntity<Void> eliminar(@PathVariable int id) {
         proveedorService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ── Escenarios JPA ────────────────────────────────────────────────────────
+
+    @GetMapping("/buscar")
+    @Operation(summary = "Buscar proveedores por nombre parcial (JPA)")
+    @ApiResponse(responseCode = "200", description = "Lista de proveedores coincidentes")
+    public ResponseEntity<List<Proveedor>> buscarPorNombre(@RequestParam String nombre) {
+        return ResponseEntity.ok(proveedorService.buscarPorNombreConteniendo(nombre));
+    }
+
+    @GetMapping("/por-email")
+    @Operation(summary = "Buscar proveedor por email exacto (JPA)")
+    @ApiResponse(responseCode = "200", description = "Proveedor encontrado")
+    @ApiResponse(responseCode = "404", description = "Proveedor no encontrado")
+    public ResponseEntity<Proveedor> buscarPorEmail(@RequestParam String email) {
+        return proveedorService.buscarPorEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
