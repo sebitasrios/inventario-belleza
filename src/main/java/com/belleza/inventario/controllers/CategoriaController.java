@@ -15,26 +15,25 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/categorias")
-@Tag(name = "Categorias", description = "Operaciones para gestionar las categorías de productos")
+@Tag(name = "Categorias", description = "Operaciones para gestionar las categorias de productos")
 public class CategoriaController {
 
-    // Inyectamos la INTERFAZ — desacoplamiento de capas
     @Autowired
     private ICategoriaService categoriaService;
 
     // ── CRUD (SQL) ────────────────────────────────────────────────────────────
 
     @GetMapping
-    @Operation(summary = "Listar todas las categorías")
+    @Operation(summary = "Listar todas las categorias")
     @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
     public ResponseEntity<List<Categoria>> obtenerTodos() {
         return ResponseEntity.ok(categoriaService.obtenerTodos());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar categoría por ID")
-    @ApiResponse(responseCode = "200", description = "Categoría encontrada")
-    @ApiResponse(responseCode = "404", description = "Categoría no encontrada")
+    @Operation(summary = "Buscar categoria por ID")
+    @ApiResponse(responseCode = "200", description = "Categoria encontrada")
+    @ApiResponse(responseCode = "404", description = "Categoria no encontrada")
     public ResponseEntity<Categoria> obtenerPorId(@PathVariable int id) {
         Categoria categoria = categoriaService.obtenerPorId(id);
         if (categoria == null) {
@@ -44,34 +43,43 @@ public class CategoriaController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear una categoría")
-    @ApiResponse(responseCode = "201", description = "Categoría creada exitosamente")
-    @ApiResponse(responseCode = "409", description = "Ya existe una categoría con ese nombre")
+    @Operation(summary = "Crear una categoria")
+    @ApiResponse(responseCode = "201", description = "Categoria creada exitosamente")
+    @ApiResponse(responseCode = "409", description = "Ya existe una categoria con ese nombre")
     public ResponseEntity<String> crear(@RequestBody Categoria categoria) {
-        // Escenario JPA: verificar duplicados antes de crear
         Optional<Categoria> existente = categoriaService.buscarPorNombreExacto(categoria.getNombre());
         if (existente.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Ya existe una categoría con el nombre: " + categoria.getNombre());
+                    .body("Ya existe una categoria con el nombre: " + categoria.getNombre());
         }
         categoriaService.crear(categoria);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Categoría creada exitosamente");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Categoria creada exitosamente");
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar una categoría")
-    @ApiResponse(responseCode = "200", description = "Categoría actualizada exitosamente")
-    @ApiResponse(responseCode = "404", description = "Categoría no encontrada")
+    @Operation(summary = "Actualizar una categoria")
+    @ApiResponse(responseCode = "200", description = "Categoria actualizada exitosamente")
+    @ApiResponse(responseCode = "404", description = "Categoria no encontrada")
     public ResponseEntity<String> actualizar(@PathVariable int id, @RequestBody Categoria categoria) {
+        // ← verificar que existe antes de actualizar
+        if (categoriaService.obtenerPorId(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Categoria no encontrada con ID: " + id);
+        }
         categoria.setIdCategoria(id);
         categoriaService.actualizar(categoria);
-        return ResponseEntity.ok("Categoría actualizada exitosamente");
+        return ResponseEntity.ok("Categoria actualizada exitosamente");
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar una categoría")
-    @ApiResponse(responseCode = "204", description = "Categoría eliminada exitosamente")
+    @Operation(summary = "Eliminar una categoria")
+    @ApiResponse(responseCode = "204", description = "Categoria eliminada exitosamente")
+    @ApiResponse(responseCode = "404", description = "Categoria no encontrada")
     public ResponseEntity<Void> eliminar(@PathVariable int id) {
+        // ← verificar que existe antes de eliminar
+        if (categoriaService.obtenerPorId(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         categoriaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
@@ -79,8 +87,8 @@ public class CategoriaController {
     // ── Escenarios JPA ────────────────────────────────────────────────────────
 
     @GetMapping("/buscar")
-    @Operation(summary = "Buscar categorías por nombre parcial (JPA)")
-    @ApiResponse(responseCode = "200", description = "Lista de categorías coincidentes")
+    @Operation(summary = "Buscar categorias por nombre parcial (JPA)")
+    @ApiResponse(responseCode = "200", description = "Lista de categorias coincidentes")
     public ResponseEntity<List<Categoria>> buscarPorNombre(@RequestParam String nombre) {
         return ResponseEntity.ok(categoriaService.buscarPorNombreConteniendo(nombre));
     }

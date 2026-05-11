@@ -17,7 +17,6 @@ import java.util.List;
 @Tag(name = "Productos", description = "Operaciones para gestionar el inventario de productos de belleza")
 public class ProductoController {
 
-    // Inyectamos la INTERFAZ, no la implementación concreta — desacoplamiento
     @Autowired
     private IProductoService productoService;
 
@@ -55,6 +54,11 @@ public class ProductoController {
     @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente")
     @ApiResponse(responseCode = "404", description = "Producto no encontrado")
     public ResponseEntity<String> actualizar(@PathVariable int id, @RequestBody Producto producto) {
+        // ← verificar que existe antes de actualizar
+        if (productoService.obtenerPorId(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Producto no encontrado con ID: " + id);
+        }
         producto.setIdProducto(id);
         productoService.actualizar(producto);
         return ResponseEntity.ok("Producto actualizado exitosamente");
@@ -63,7 +67,12 @@ public class ProductoController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar un producto")
     @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente")
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado")
     public ResponseEntity<Void> eliminar(@PathVariable int id) {
+        // ← verificar que existe antes de eliminar
+        if (productoService.obtenerPorId(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         productoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
@@ -71,16 +80,16 @@ public class ProductoController {
     // ── Escenarios JPA ────────────────────────────────────────────────────────
 
     @GetMapping("/bajo-stock")
-    @Operation(summary = "Productos con stock por debajo del mínimo (JPA)",
-            description = "Devuelve los productos cuyo stock actual es menor al stock mínimo configurado")
+    @Operation(summary = "Productos con stock por debajo del minimo (JPA)",
+            description = "Devuelve los productos cuyo stock actual es menor al stock minimo configurado")
     @ApiResponse(responseCode = "200", description = "Lista de productos con stock bajo")
     public ResponseEntity<List<Producto>> obtenerBajoStock() {
         return ResponseEntity.ok(productoService.obtenerProductosBajoStock());
     }
 
     @GetMapping("/por-categoria/{idCategoria}")
-    @Operation(summary = "Productos por categoría (JPA)")
-    @ApiResponse(responseCode = "200", description = "Lista de productos de la categoría")
+    @Operation(summary = "Productos por categoria (JPA)")
+    @ApiResponse(responseCode = "200", description = "Lista de productos de la categoria")
     public ResponseEntity<List<Producto>> obtenerPorCategoria(@PathVariable int idCategoria) {
         return ResponseEntity.ok(productoService.obtenerPorCategoria(idCategoria));
     }

@@ -18,7 +18,6 @@ import java.util.Optional;
 @Tag(name = "Proveedores", description = "Operaciones para gestionar los proveedores")
 public class ProveedorController {
 
-    // Inyectamos la INTERFAZ — desacoplamiento de capas
     @Autowired
     private IProveedorService proveedorService;
 
@@ -48,7 +47,6 @@ public class ProveedorController {
     @ApiResponse(responseCode = "201", description = "Proveedor creado exitosamente")
     @ApiResponse(responseCode = "409", description = "Ya existe un proveedor con ese email")
     public ResponseEntity<String> crear(@RequestBody Proveedor proveedor) {
-        // Escenario JPA: verificar email duplicado antes de crear
         Optional<Proveedor> existente = proveedorService.buscarPorEmail(proveedor.getEmail());
         if (existente.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -63,6 +61,11 @@ public class ProveedorController {
     @ApiResponse(responseCode = "200", description = "Proveedor actualizado exitosamente")
     @ApiResponse(responseCode = "404", description = "Proveedor no encontrado")
     public ResponseEntity<String> actualizar(@PathVariable int id, @RequestBody Proveedor proveedor) {
+        // ← verificar que existe antes de actualizar
+        if (proveedorService.obtenerPorId(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Proveedor no encontrado con ID: " + id);
+        }
         proveedor.setIdProveedor(id);
         proveedorService.actualizar(proveedor);
         return ResponseEntity.ok("Proveedor actualizado exitosamente");
@@ -71,7 +74,12 @@ public class ProveedorController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar un proveedor")
     @ApiResponse(responseCode = "204", description = "Proveedor eliminado exitosamente")
+    @ApiResponse(responseCode = "404", description = "Proveedor no encontrado")
     public ResponseEntity<Void> eliminar(@PathVariable int id) {
+        // ← verificar que existe antes de eliminar
+        if (proveedorService.obtenerPorId(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         proveedorService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
