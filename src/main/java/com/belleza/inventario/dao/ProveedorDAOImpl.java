@@ -36,11 +36,12 @@ public class ProveedorDAOImpl implements ProveedorDAO {
         Proveedor p = null;
         String sql = "SELECT id_proveedor, nombre, telefono, email FROM proveedor WHERE id_proveedor = ?";
         try (Connection con = conexionDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            ps.setInt(1, id);
-            if (rs.next()) {
-                p = mapearProveedor(rs);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);                        // ← primero se setea
+            try (ResultSet rs = ps.executeQuery()) { // ← luego se ejecuta
+                if (rs.next()) {
+                    p = mapearProveedor(rs);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
