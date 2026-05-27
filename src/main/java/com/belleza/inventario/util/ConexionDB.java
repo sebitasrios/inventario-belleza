@@ -8,10 +8,12 @@ import java.sql.SQLException;
 @Component
 public class ConexionDB {
 
-    private static final String URL = "jdbc:sqlserver://localhost:1433;" +
+    private static final String URL = "jdbc:sqlserver://localhost\\SQLDEV;" +
             "databaseName=inventario_belleza;" +
             "encrypt=false;" +
-            "integratedSecurity=true;";
+            "trustServerCertificate=true;" +
+            "user=sa;" +
+            "password=Belleza2026;";
 
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
